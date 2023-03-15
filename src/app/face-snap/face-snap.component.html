@@ -1,7 +1,9 @@
-<div class="face-snap-card">
-    <h2>{{ faceSnap.title }}</h2>
-    <img [src]="faceSnap.imageUrl" [alt]="faceSnap.title">
-    <p>Mis en ligne le {{ faceSnap.createdDate}}</p>
-    <p>{{ faceSnap.description }}</p>
-    <p><button (click)="Onsnap()">{{ Buttontext }}</button>😺 {{ faceSnap.snaps }}</p>
-  </div>
+<div class="face-snap-card" [ngClass]="{snapped: Buttontext === 'Del snap now'}">
+  <h2>{{ faceSnap.title }}</h2>
+  <img [src]="faceSnap.imageUrl" [alt]="faceSnap.title">
+  <p>Mis en ligne le {{ faceSnap.createdDate}}</p>
+  <p>{{ faceSnap.description }}</p>
+  <p *ngIf="faceSnap.location">Prise de ma Photo // Lieu : {{ faceSnap.location}} </p>
+  <p><button (click)="Onsnap()">{{ Buttontext }}</button>😺 <span [ngStyle]="{color: 'rgb(0,'+ faceSnap.snaps +',0)'}">
+      {{ faceSnap.snaps }}</span></p>
+</div>

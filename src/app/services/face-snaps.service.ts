@@ -1,3 +1,4 @@
+import { map, switchMap } from 'rxjs/operators';
 import { Observable } from 'rxjs';
 import { HttpClient} from '@angular/common/http';
 import { Injectable } from "@angular/core";
@@ -11,8 +12,6 @@ export class FaceSnapsService {
 
   constructor(private http: HttpClient){}
 
-    faceSnaps: FaceSnap[] = [] ;
-
     getAllFaceSnaps(): Observable<FaceSnap[]> {
       return this.http.get<FaceSnap[]>('http://localhost:3000/facesnaps');
     }
@@ -21,18 +20,27 @@ export class FaceSnapsService {
       return this.http.get<FaceSnap>(`http://localhost:3000/facesnaps/${faceSnapId}`);
     }
 
-    snapFaceSnapById(faceSnapId: number, snapType: 'snap'|'unsnap'): void {
-        // const faceSnap = this.getFaceSnapById(faceSnapId);
-        // snapType === 'snap' ? faceSnap.snaps++ : faceSnap.snaps--;
+    snapFaceSnapById(faceSnapId: number, snapType: 'snap'|'unsnap'): Observable<FaceSnap> {
+      return this.getFaceSnapById(faceSnapId).pipe(
+        map(FaceSnap => ({
+          ...FaceSnap,
+          snaps: FaceSnap.snaps + (snapType === 'snap' ? 1 : -1)
+        })),
+        switchMap(updatedFaceSnap => this.http.put<FaceSnap>(`http://localhost:3000/facesnaps/${faceSnapId}`,updatedFaceSnap) )
+      );
     }
 
-    addFaceSnap(formValue: { title: string, description: string, imageUrl: string, location?: string }) {
-      const faceSnap: FaceSnap = {
+    addFaceSnap(formValue: { title: string, description: string, imageUrl: string, location?: string }):Observable<FaceSnap> {
+      return this.getAllFaceSnaps().pipe(
+       map(facesnaps => [...facesnaps].sort((a,b)=> a.id - b.id)),
+       map(sortedFacesnaps => sortedFacesnaps[sortedFacesnaps.length - 1]),
+       map(previousFacesnap => ({
           ...formValue,
           snaps: 0,
           createdDate: new Date(),
-          id: this.faceSnaps[this.faceSnaps.length - 1].id + 1
-      };
-      this.faceSnaps.push(faceSnap);
-  }
+          id: previousFacesnap.id + 1
+       })),
+      switchMap(newFacesnap => this.http.post<FaceSnap>('http://localhost:3000/facesnaps',newFacesnap))
+      );
+    }
 }

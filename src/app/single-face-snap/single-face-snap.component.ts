@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute } from '@angular/router';
 import { FaceSnap } from '../models/face-snap.model';
 import { FaceSnapsService } from '../services/face-snaps.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-single-face-snap',
@@ -9,7 +10,7 @@ import { FaceSnapsService } from '../services/face-snaps.service';
   styleUrls: ['./single-face-snap.component.scss']
 })
 export class SingleFaceSnapComponent implements OnInit {
-  faceSnap!: FaceSnap;
+  faceSnap$!: Observable<FaceSnap>;
   Buttontext!: string;
 
   constructor(private faceSnapsService: FaceSnapsService,
@@ -18,16 +19,16 @@ export class SingleFaceSnapComponent implements OnInit {
   ngOnInit() {
     this.Buttontext = 'Add snap now';
     const faceSnapId = +this.route.snapshot.params['id'];
-    this.faceSnap = this.faceSnapsService.getFaceSnapById(faceSnapId);
+    this.faceSnap$ = this.faceSnapsService.getFaceSnapById(faceSnapId);
   }
 
   Onsnap() {
-    if (this.Buttontext == 'Add snap now') {
-      this.faceSnapsService.snapFaceSnapById(this.faceSnap.id, 'snap');
-      this.Buttontext = 'Del snap now';
-    } else {
-      this.faceSnapsService.snapFaceSnapById(this.faceSnap.id, 'unsnap');
-      this.Buttontext = 'Add snap now';
-    }
+    // if (this.Buttontext == 'Add snap now') {
+    //   this.faceSnapsService.snapFaceSnapById(this.faceSnap.id, 'snap');
+    //   this.Buttontext = 'Del snap now';
+    // } else {
+    //   this.faceSnapsService.snapFaceSnapById(this.faceSnap.id, 'unsnap');
+    //   this.Buttontext = 'Add snap now';
+    // }
   }
 }

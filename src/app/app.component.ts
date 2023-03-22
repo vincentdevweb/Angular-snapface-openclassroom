@@ -15,7 +15,7 @@ export class AppComponent implements OnInit {
 
   ngOnInit() {
     interval(500).pipe(
-      take(10),
+      take(0),
       map(value => value % 2 === 0 ? 'rouge' : 'jaune'),
       tap(color => console.log(`La lumière s'allume en %c${color}`, `color: ${this.translateColor(color)}`)),
       concatMap(color => this.getTrainObservable$(color)),
